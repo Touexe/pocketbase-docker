@@ -2,8 +2,6 @@ services:
   test-default:
     build:
       context: ..
-      args:
-        VERSION: "${VERSION:-0.30.0}"
     container_name: pocketbase-test-default
     ports:
       - "8090:8090"
@@ -27,8 +25,6 @@ services:
   test-custom-env:
     build:
       context: ..
-      args:
-        VERSION: "${VERSION:-0.30.0}"
     container_name: pocketbase-test-custom-env
     ports:
       - "8091:8091"
@@ -52,8 +48,6 @@ services:
   test-dev-mode:
     build:
       context: ..
-      args:
-        VERSION: "${VERSION:-0.30.0}"
     container_name: pocketbase-test-dev
     ports:
       - "8092:8092"
@@ -75,24 +69,18 @@ services:
   test-version:
     build:
       context: ..
-      args:
-        VERSION: "${VERSION:-0.30.0}"
     container_name: pocketbase-test-version
     command: ["--version"]
 
   test-help:
     build:
       context: ..
-      args:
-        VERSION: "${VERSION:-0.30.0}"
     container_name: pocketbase-test-help
     command: ["--help"]
 
   test-superuser:
     build:
       context: ..
-      args:
-        VERSION: "${VERSION:-0.30.0}"
     container_name: pocketbase-test-superuser
     ports:
       - "8093:8093"

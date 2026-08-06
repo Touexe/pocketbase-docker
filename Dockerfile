@@ -12,7 +12,7 @@ RUN go mod init pocketbase-custom \
 
 FROM debian:bookworm-slim
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates tzdata \
+    && apt-get install -y --no-install-recommends ca-certificates tzdata wget \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /build/pocketbase /usr/local/bin/pocketbase
