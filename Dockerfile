@@ -18,6 +18,6 @@ RUN apt-get update \
 COPY --from=builder /build/pocketbase /usr/local/bin/pocketbase
 COPY --from=sqlean-downloader /sqlean/fileio.so /usr/lib/fileio.so
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
