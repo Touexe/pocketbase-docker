@@ -1,20 +1,22 @@
-FROM alpine:3.24.1 AS downloader
+FROM alpine:3.24.1 AS sqlean-downloader
+RUN apk add --no-cache wget unzip
+RUN wget https://github.com/nalgeon/sqlean/releases/download/0.28.3/sqlean-linux-x64.zip \
+    && unzip sqlean-linux-x64.zip -d /sqlean
 
-ARG TARGETOS
-ARG TARGETARCH
-ARG TARGETVARIANT
-ARG VERSION
+FROM golang:1.25-bookworm AS builder
+WORKDIR /build
+COPY main.go .
+RUN go mod init pocketbase-custom \
+    && go mod tidy \
+    && CGO_ENABLED=1 go build -o pocketbase .
 
-ENV BUILDX_ARCH="${TARGETOS:-linux}_${TARGETARCH:-amd64}${TARGETVARIANT}"
+FROM debian:bookworm-slim
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates tzdata \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://github.com/pocketbase/pocketbase/releases/download/v${VERSION}/pocketbase_${VERSION}_${BUILDX_ARCH}.zip \
-    && unzip pocketbase_${VERSION}_${BUILDX_ARCH}.zip \
-    && chmod +x /pocketbase
-
-FROM alpine:3.24.1
-RUN apk update && apk add ca-certificates tzdata && rm -rf /var/cache/apk/*
-
-COPY --from=downloader /pocketbase /usr/local/bin/pocketbase
+COPY --from=builder /build/pocketbase /usr/local/bin/pocketbase
+COPY --from=sqlean-downloader /sqlean/fileio.so /usr/lib/fileio.so
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
