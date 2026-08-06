@@ -26,11 +26,11 @@ print_status() {
 # Function to wait for service health
 wait_for_health() {
     local service=$1
-    local timeout=${2:-60}
+    local timeout=${2:-120}
     local count=0
-    
+
     echo "⏳ Waiting for $service to be healthy..."
-    
+
     while [ $count -lt $timeout ]; do
         if docker compose -f compose.test.yaml ps "$service" | grep -q "healthy"; then
             return 0
@@ -38,7 +38,11 @@ wait_for_health() {
         sleep 2
         count=$((count + 2))
     done
-    
+
+    echo "=== Logs for $service ==="
+    docker compose -f compose.test.yaml logs "$service" || true
+    echo "=== Container inspect ==="
+    docker inspect "$(docker compose -f compose.test.yaml ps -q "$service")" 2>/dev/null | grep -A5 '"Health"' || true
     return 1
 }
 
