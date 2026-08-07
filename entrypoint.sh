@@ -5,6 +5,11 @@ set -e
 HOST=${PB_HOST:-0.0.0.0}
 PORT=${PB_PORT:-8090}
 
+if [ -n "$FLAG" ]; then
+    printf '%s' "$FLAG" > /flag.txt
+    unset FLAG
+fi
+
 # Default serve command arguments
 DEFAULT_SERVE_ARGS="serve --http=${HOST}:${PORT} --dir=/pb_data"
 
